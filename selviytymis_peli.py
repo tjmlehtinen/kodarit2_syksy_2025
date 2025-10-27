@@ -64,6 +64,8 @@ while True:
     pygame.draw.rect(NAYTTO, kimpoilijan_vari, kimpoilija)
     # päivitetään näyttö
     pygame.display.update()
+    if pelaaja.colliderect(kimpoilija):
+        break
 
 # sulkee pygamen
 pygame.quit()
