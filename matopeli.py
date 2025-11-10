@@ -45,17 +45,65 @@ ALAS = 0
 VASEN = 1
 YLOS = 2
 OIKEA = 3
+suunta = ALAS
+
+# madon liikuttaminen
+def liikuta_matoa():
+    # otetaan madon pään koordinaatit talteen
+    paa_x, paa_y = mato[-1]
+    # lasketaan uusi pää
+    if suunta == ALAS:
+        uusi_paa = (paa_x, paa_y + 1)
+    elif suunta == OIKEA:
+        uusi_paa = (paa_x + 1, paa_y)
+    elif suunta == VASEN:
+        uusi_paa = (paa_x - 1, paa_y)
+    elif suunta == YLOS:
+        uusi_paa = (paa_x, paa_y - 1)
+    # lisätään uusi pää matoon
+    mato.append(uusi_paa)
+    # poistetaan madon viimeinen pala
+    mato.pop(0)
+
+# meneekö mato yli reunan
+def mato_yli_reunan():
+    paa_x, paa_y = mato[-1]
+    if paa_x < 0:
+        return True
+    return False
+
+# kello
+kello = pygame.time.Clock()
 
 # peliluuppi
 while True:
+    # nopeus eli kertoja sekunnissa
+    kello.tick(3)
     # tapahtumat
     for tapahtuma in pygame.event.get():
         # onko lopetus
         if tapahtuma.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        # onko tapahtuma näppäimen painallus
+        if tapahtuma.type == pygame.KEYDOWN:
+            # onko näppäin nuoli oikealle
+            if tapahtuma.key == pygame.K_RIGHT:
+                suunta = OIKEA
+            # nuoli vasemmalle
+            elif tapahtuma.key == pygame.K_LEFT:
+                suunta = VASEN
+            # nuoli alas
+            elif tapahtuma.key == pygame.K_DOWN:
+                suunta = ALAS
+            # nuoli ylös
+            elif tapahtuma.key == pygame.K_UP:
+                suunta = YLOS
     piirra_tausta()
     piirra_mato()
     pygame.display.update()
+    liikuta_matoa()
+    if mato_yli_reunan():
+        break
 
 pygame.quit()
