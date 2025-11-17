@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -17,6 +18,7 @@ pygame.display.set_caption("MATOPELI")
 taustavari = pygame.Color(205, 133, 63)
 taustaruutuvari = pygame.Color(244, 164, 96)
 matovari = pygame.Color(0, 130, 0)
+ruokavari = pygame.Color(130, 0, 0)
 
 # ruudun piirtäminen
 def piirra_ruutu(x, y, vari):
@@ -40,6 +42,18 @@ def piirra_mato():
         x, y = madon_osa
         piirra_ruutu(x, y, matovari)
 
+# ruoka
+def arvo_ruoka():
+    x = random.randrange(LEVEYS)
+    y = random.randrange(KORKEUS)
+    return (x, y)
+
+ruoka = arvo_ruoka()
+
+def piirra_ruoka():
+    x, y = ruoka
+    piirra_ruutu(x, y, ruokavari)
+
 # suunnat
 ALAS = 0
 VASEN = 1
@@ -49,6 +63,7 @@ suunta = ALAS
 
 # madon liikuttaminen
 def liikuta_matoa():
+    global ruoka
     # otetaan madon pään koordinaatit talteen
     paa_x, paa_y = mato[-1]
     # lasketaan uusi pää
@@ -62,13 +77,16 @@ def liikuta_matoa():
         uusi_paa = (paa_x, paa_y - 1)
     # lisätään uusi pää matoon
     mato.append(uusi_paa)
-    # poistetaan madon viimeinen pala
-    mato.pop(0)
+    # poistetaan madon viimeinen pala, jos ei ole uusi_paa ruoan kohdalla
+    if uusi_paa != ruoka:
+        mato.pop(0)
+    else:
+        ruoka = arvo_ruoka()
 
 # meneekö mato yli reunan
 def mato_yli_reunan():
     paa_x, paa_y = mato[-1]
-    if paa_x < 0:
+    if paa_x < 0 or paa_x >= LEVEYS or paa_y < 0 or paa_y >= KORKEUS:
         return True
     return False
 
@@ -100,10 +118,12 @@ while True:
             elif tapahtuma.key == pygame.K_UP:
                 suunta = YLOS
     piirra_tausta()
+    piirra_ruoka()
     piirra_mato()
     pygame.display.update()
     liikuta_matoa()
     if mato_yli_reunan():
         break
 
+print("Madon pituus lopussa: " + str(len(mato)))
 pygame.quit()
