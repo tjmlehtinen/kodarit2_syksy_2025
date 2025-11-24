@@ -46,7 +46,11 @@ def piirra_mato():
 def arvo_ruoka():
     x = random.randrange(LEVEYS)
     y = random.randrange(KORKEUS)
-    return (x, y)
+    uusi_ruoka = (x, y)
+    if uusi_ruoka in mato:
+        print("Ruoka arvottiin madon sisään")
+        return arvo_ruoka()
+    return uusi_ruoka
 
 ruoka = arvo_ruoka()
 
@@ -90,6 +94,13 @@ def mato_yli_reunan():
         return True
     return False
 
+# osuuko mato itseensä
+def mato_osuu_itseensa():
+    if mato[-1] in mato[0:-1]:
+        print("Mato osui itseensä")
+        return True
+    return False
+
 # kello
 kello = pygame.time.Clock()
 
@@ -122,7 +133,7 @@ while True:
     piirra_mato()
     pygame.display.update()
     liikuta_matoa()
-    if mato_yli_reunan():
+    if mato_yli_reunan() or mato_osuu_itseensa():
         break
 
 print("Madon pituus lopussa: " + str(len(mato)))
